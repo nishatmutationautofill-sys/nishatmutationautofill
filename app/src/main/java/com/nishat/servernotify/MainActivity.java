@@ -36,6 +36,6 @@ public class MainActivity extends Activity {
     @JavascriptInterface public void setServerUrl(String url){if(url!=null&&url.matches("(?i)^https://[^ ]+"))prefs.edit().putString("server_url",url.replaceAll("/+$", "")).apply();}
   }
   private void startNotificationService(){Intent i=new Intent(this,NotificationService.class); if(Build.VERSION.SDK_INT>=26)startForegroundService(i);else startService(i);}
-  @Override protected void onResume(){super.onResume(); if(prefs!=null&&!prefs.getString("admin_token","").isEmpty()&&!prefs.getString("server_url","").isEmpty())startNotificationService();}
+  @Override protected void onResume(){super.onResume(); if(prefs!=null&&!prefs.getString("admin_token","").isEmpty())startNotificationService();}
   @Override public void onBackPressed(){if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();}
 }

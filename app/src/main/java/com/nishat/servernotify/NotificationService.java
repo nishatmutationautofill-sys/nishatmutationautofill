@@ -35,7 +35,15 @@ public class NotificationService extends Service {
     @Override public void onFailure(WebSocket ws,Throwable e,Response r){if(socket==ws)socket=null;if(!stopping)handler.postDelayed(retryTask,5000);}
   });}
   private void showMessage(String title,String text){NotificationManager nm=getSystemService(NotificationManager.class);int id=(int)(System.currentTimeMillis()%100000)+200;nm.notify(id,build(title,text,false));}
-  @Override public void onTaskRemoved(Intent root){super.onTaskRemoved(root);}
+  @Override public void onTaskRemoved(Intent root){
+    super.onTaskRemoved(root);
+    // The foreground service should normally survive task removal. Reassert it if the
+    // system invokes this callback while the service is still active.
+    if(!stopping){
+      handler.removeCallbacks(retryTask);
+      if(socket==null) handler.postDelayed(retryTask,1500);
+    }
+  }
   @Override public void onDestroy(){stopping=true;handler.removeCallbacks(retryTask);if(socket!=null)socket.close(1000,"service stopped");if(client!=null)client.dispatcher().executorService().shutdown();super.onDestroy();}
   @Override public IBinder onBind(Intent i){return null;}
 }
