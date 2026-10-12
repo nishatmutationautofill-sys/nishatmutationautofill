@@ -12,9 +12,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
-import android.app.AlertDialog;
-import android.text.InputType;
 import android.view.ViewGroup;
 
 public class MainActivity extends Activity {
@@ -29,12 +26,7 @@ public class MainActivity extends Activity {
     WebSettings s=web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true); s.setAllowFileAccess(true); s.setLoadsImagesAutomatically(true);
     web.setWebViewClient(new WebViewClient()); web.setWebChromeClient(new WebChromeClient());
     web.addJavascriptInterface(new Bridge(), "AndroidBridge");
-    if(prefs.getString("server_url", "").isEmpty()) showServerDialog(); else web.loadUrl("file:///android_asset/index.html");
-  }
-  private void showServerDialog(){
-    EditText input=new EditText(this); input.setSingleLine(true); input.setHint("https://chat.example.com"); input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
-    new AlertDialog.Builder(this).setTitle("নিজস্ব VPS সার্ভার URL").setMessage("HTTPS URL দিন (শেষে / দেবেন না)।").setView(input)
-      .setCancelable(false).setPositiveButton("সংরক্ষণ",(d,w)->{String u=input.getText().toString().trim().replaceAll("/+$", ""); if(u.matches("(?i)^https://[^ ]+")){prefs.edit().putString("server_url",u).apply(); web.loadUrl("file:///android_asset/index.html");}else showServerDialog();}).show();
+    web.loadUrl("file:///android_asset/index.html");
   }
   public class Bridge {
     @JavascriptInterface public String getServerUrl(){return prefs.getString("server_url", "");}
