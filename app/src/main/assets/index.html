@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0084ff">
+<title>চ্যাট অ্যাডমিন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--panel:#fff;--hover:#f2f3f5;--sel:#e7f1ff;--line:#e4e6eb;--ink:#050505;--muted:#65676b;--pri:#0084ff;--grad:linear-gradient(135deg,#0099ff,#7a4dff);--recv:#f0f0f0;--ann:#fff4d6;--ok:#31a24c;--bad:#e41e3f}
+@media(prefers-color-scheme:dark){:root{--bg:#18191a;--panel:#242526;--hover:#3a3b3c;--sel:#263951;--line:#3e4042;--ink:#e4e6eb;--muted:#b0b3b8;--recv:#3a3b3c;--ann:#4a3d12}}
+*{box-sizing:border-box;margin:0;font-family:'Hind Siliguri','Segoe UI',Tahoma,sans-serif}
+html,body{height:100%}body{background:var(--bg);color:var(--ink);font-size:15px}
+button{border:0;cursor:pointer;color:inherit;background:none;font-size:15px}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.hide{display:none!important}
+input,textarea{width:100%;border:0;outline:0;color:var(--ink);font-size:15px}
+.ib{width:36px;height:36px;border-radius:50%;background:var(--hover);display:grid;place-items:center;flex:none;font-size:16px}
+.ib:hover{filter:brightness(.93)}
+.pill{background:var(--pri);color:#fff;border-radius:18px;padding:8px 16px;font-weight:600}
+.pill.bad{background:var(--bad)}.pill.sec{background:var(--hover);color:var(--ink)}
+#login{height:100%;display:grid;place-items:center;padding:16px}
+#login form{width:min(360px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:12px;text-align:center}
+#login .lg{width:64px;height:64px;border-radius:50%;background:var(--grad);margin:0 auto;display:grid;place-items:center;color:#fff;font-size:30px}
+#login input{background:var(--hover);border-radius:22px;padding:11px 16px}
+#lerr{color:var(--bad);font-size:13px;min-height:18px}
+#app{display:grid;grid-template-columns:340px 1fr;height:100dvh}
+body.info #app{grid-template-columns:340px 1fr 320px}
+#side,#info{background:var(--panel);display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+#info{border-right:0;border-left:1px solid var(--line);display:none;overflow-y:auto}
+body.info #info{display:flex}
+.sh{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
+.sh h1{font-size:24px;font-weight:700;flex:1}
+.cs{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.cs i{width:9px;height:9px;border-radius:50%;background:#bcc0c4}.cs.on i{background:var(--ok)}
+.sr{padding:6px 14px 10px}.sr input{background:var(--hover);border-radius:20px;padding:9px 14px}
+#ul{overflow-y:auto;flex:1;padding:0 6px 8px}
+.vstats{margin:0 14px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.vstats .vt{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.vstats .vn{font-size:25px;font-weight:700;line-height:1.25;color:var(--pri)}
+.vstats .vh{font-size:11px;color:var(--muted);margin-top:5px}
+.vstats .vdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:8px}
+.vstats .vday{text-align:center;background:var(--hover);border-radius:6px;padding:5px 1px;font-size:10px;color:var(--muted)}
+.vstats .vday b{display:block;font-size:12px;color:var(--ink)}
+.u{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;cursor:pointer}
+.u:hover{background:var(--hover)}.u.sel{background:var(--sel)}
+.av{position:relative;width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:19px;background:hsl(var(--h) 55% 50%)}
+.av i{position:absolute;right:0;bottom:0;width:13px;height:13px;border-radius:50%;background:var(--ok);border:2px solid var(--panel)}
+.av.sm{width:28px;height:28px;font-size:12px}.av.lg{width:84px;height:84px;font-size:34px}
+.ui{flex:1;min-width:0}
+.un{font-weight:600;display:flex;gap:6px;align-items:center}
+.un span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv{font-size:13px;color:var(--muted);display:flex;gap:6px}
+.pv span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.u.new .un,.u.new .pv{font-weight:700;color:var(--ink)}
+.dotn{width:12px;height:12px;border-radius:50%;background:var(--pri);flex:none}
+.tag{font-size:11px;background:var(--bad);color:#fff;border-radius:8px;padding:0 6px}
+.tag.web{background:var(--pri)}
+.sn{font-size:11px;color:var(--muted);margin:8px 0 0 40px;align-self:flex-start}
+.note{margin:0 16px 10px;padding:8px 12px;border-radius:10px;background:var(--ann);font-size:12.5px;line-height:1.5}
+.ib.call{text-decoration:none;color:inherit}
+.none{padding:30px 16px;text-align:center;color:var(--muted)}
+#chat{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+.chh{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--panel);min-height:60px}
+.chh .ui b{display:block;font-size:16px}.chh small{color:var(--muted);font-size:12px}
+#back{display:none}
+#ms{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;position:relative}
+#ms.drag::after{content:'ফাইল ছেড়ে দিন';position:absolute;inset:8px;border:2px dashed var(--pri);border-radius:14px;background:#0084ff1a;display:grid;place-items:center;color:var(--pri);font-weight:600}
+.day,.an{align-self:center;font-size:12px;color:var(--muted);margin:12px 0 6px}
+.an{background:var(--ann);color:var(--ink);padding:6px 12px;border-radius:14px;max-width:80%;white-space:pre-wrap}
+.r{display:flex;align-items:flex-end;gap:6px;margin-top:2px;max-width:100%}
+.r.c{margin-top:8px}.r.admin{flex-direction:row-reverse}
+.sp{width:28px;flex:none}
+.b{max-width:min(70%,520px);padding:8px 12px;border-radius:18px;background:var(--recv);white-space:pre-wrap;word-break:break-word;line-height:1.45}
+.admin .b{background:var(--grad);color:#fff}
+.user:not(.f) .b{border-top-left-radius:4px}.user:not(.l) .b{border-bottom-left-radius:4px}
+.admin:not(.f) .b{border-top-right-radius:4px}.admin:not(.l) .b{border-bottom-right-radius:4px}
+.b.m{padding:3px;background:none!important}.b img{display:block;max-width:200px;max-height:160px;width:auto;height:auto;object-fit:cover;border-radius:12px;cursor:zoom-in;margin-top:4px}.b.m img{margin:0}
+#lb{position:fixed;inset:0;background:#000d;z-index:60;display:grid;place-items:center;cursor:zoom-out;padding:16px}#lb img{max-width:94vw;max-height:90vh;border-radius:8px}
+.b a{color:inherit;display:flex;gap:8px;align-items:center;margin-top:4px;text-decoration:underline}
+.b.m a{margin:0}
+.x{opacity:0;font-size:13px;width:26px;height:26px;border-radius:50%;flex:none}
+.r:hover .x,.x:focus-visible{opacity:.8}.x:hover{background:var(--hover)}
+.tm{font-size:11px;color:var(--muted);margin:2px 40px 0;align-self:flex-start}.tm.admin{align-self:flex-end}
+.empty{margin:auto;text-align:center;color:var(--muted)}.empty .lg{font-size:44px}
+#up{padding:6px 16px;font-size:13px;color:var(--muted);background:var(--panel);border-top:1px solid var(--line)}
+#up i{display:block;height:4px;border-radius:4px;background:var(--grad);width:0;margin-top:4px;transition:width .15s}
+#rf{display:flex;align-items:flex-end;gap:8px;padding:10px 14px;background:var(--panel);border-top:1px solid var(--line)}
+#rf label{cursor:pointer;color:var(--pri)}
+#tx{background:var(--hover);border-radius:20px;padding:9px 14px;resize:none;max-height:120px;height:38px}
+#sb{color:var(--pri);font-size:22px;width:36px;height:36px}#sb:disabled,#rf label.dis{opacity:.4;pointer-events:none}
+#info .ip{padding:20px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+#info .ip b{font-size:18px}
+.kv{padding:0 16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.kv dt{color:var(--muted)}.kv dd{text-align:right;overflow-wrap:anywhere}
+#info h3{font-size:14px;padding:18px 16px 6px}
+.fi{display:flex;gap:10px;align-items:center;padding:6px 16px}.fi:hover{background:var(--hover)}
+.fi .ib{border-radius:10px}.fi div{flex:1;min-width:0;font-size:13px}
+.fi b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}.fi small{color:var(--muted)}.fi a{color:var(--pri);text-decoration:none}
+dialog{border:0;border-radius:16px;padding:20px;width:min(420px,92vw);background:var(--panel);color:var(--ink)}
+dialog::backdrop{background:#0008}
+dialog h2{font-size:18px;margin-bottom:10px}
+dialog textarea{background:var(--hover);border-radius:12px;padding:10px;min-height:110px;resize:vertical}
+dialog .ac{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#242526;color:#fff;padding:10px 16px;border-radius:20px;z-index:50;max-width:90vw}
+.ih{display:none;position:sticky;top:0;z-index:1;background:var(--panel);align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);font-size:16px}
+#ibk{display:none}
+@media(max-width:1180px){body.info #app{grid-template-columns:340px 1fr}#info{position:fixed;right:0;top:0;bottom:0;width:min(340px,100%);z-index:20;box-shadow:-8px 0 30px #0003;padding-bottom:env(safe-area-inset-bottom)}.ih{display:flex}body.info #ibk{display:block;position:fixed;inset:0;background:#0006;z-index:19}}
+@media(max-width:760px){#info{width:100%}#app,body.info #app{grid-template-columns:1fr}#chat{display:none}body.thread #side{display:none}body.thread #chat{display:flex}#back{display:grid}.b{max-width:82%}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+
+<div id="login"><form id="lf">
+  <div class="lg">💬</div><b style="font-size:20px">চ্যাট অ্যাডমিন</b>
+  <input id="tok" type="password" placeholder="ADMIN_TOKEN" autocomplete="current-password" required>
+  <button class="pill" type="submit">প্রবেশ করুন</button><div id="lerr"></div>
+</form></div>
+
+<div id="app" class="hide">
+  <aside id="side">
+    <div class="sh"><h1>চ্যাট</h1><span class="cs" id="cs"><i></i><span id="ct">সংযোগ হচ্ছে…</span></span>
+      <button class="ib" id="groupB" title="সবার গ্রুপ">👥</button><button class="ib" id="annB" title="সবাইকে ঘোষণা">📢</button><button class="ib" id="outB" title="লগ আউট">⎋</button></div>
+    <section class="vstats" aria-live="polite">
+      <div class="vt"><span>🌐 আজকের ওয়েবসাইট ভিজিটর</span><span id="vstat-status">লোড হচ্ছে…</span></div>
+      <div class="vn" id="vstat-today">—</div>
+      <div class="vh">গত ৭ দিনের দৈনিক ইউনিক ভিজিটর</div>
+      <div class="vdays" id="vstat-days"></div>
+    </section>
+    <div class="sr"><input id="q" placeholder="নাম বা আইডি খুঁজুন"></div>
+    <div id="ul"></div>
+  </aside>
+  <main id="chat">
+    <div class="chh hide" id="ch"><button class="ib" id="back" title="ফিরে যান">←</button><div id="cav"></div>
+      <div class="ui"><b id="cn"></b><small id="cst"></small></div>
+      <a class="ib call hide" id="callB" title="ফোন করুন">📞</a><button class="pill bad" id="banB"></button><button class="ib" id="infB" title="তথ্য">ⓘ</button></div>
+    <div id="ms"><div class="empty"><div class="lg">💬</div><b>কথোপকথন বেছে নিন</b><div>বাম পাশ থেকে একজন ইউজার সিলেক্ট করুন</div></div></div>
+    <div id="up" class="hide"><span id="ut"></span><i id="ub"></i></div>
+    <form id="rf" class="hide"><label class="ib" for="fi" id="fl" title="ফাইল পাঠান">📎</label><input type="file" id="fi" multiple hidden>
+      <textarea id="tx" rows="1" placeholder="উত্তর লিখুন…" maxlength="2000"></textarea><button id="sb" title="পাঠান">➤</button></form>
+  </main>
+  <aside id="info"><div class="ih"><b>তথ্য</b><button class="ib" id="infX" title="বন্ধ করুন">✕</button></div><div id="ibody"></div></aside>
+  <div id="ibk"></div>
+</div>
+
+<dialog id="dlg"><h2>সবাইকে ঘোষণা</h2><textarea id="at" maxlength="2000" placeholder="সব ইউজারের কাছে যাবে…"></textarea>
+  <div class="ac"><button class="pill sec" id="ac">বাতিল</button><button class="pill" id="as">ঘোষণা পাঠান</button></div></dialog>
+<div id="lb" class="hide"></div>
+<div id="toast" class="hide"></div>
+
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+// Firestore থেকে সর্বশেষ Cloudflare tunnel লিংক আনা হয় (tunnel-publisher.js এটা আপডেট করে)
+const FS="https://firestore.googleapis.com/v1/projects/nishatmutationautofill-3bde4/databases/(default)/documents/config/chat";
+let token=(window.AndroidBridge&&window.AndroidBridge.getAdminToken?window.AndroidBridge.getAdminToken():'')||localStorage.getItem('tok')||sessionStorage.getItem('tok')||'',base='',ws=null,users=new Map(),sel='',thread=[],groupThread=[],groupMode=false,files=[],retry=0,timer=0,connecting=false,manual=false,busy=false,tt=0;
+const seen=JSON.parse(localStorage.getItem('seen')||'{}');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const same=(a,b)=>new Date(a).toDateString()===new Date(b).toDateString();
+const hm=t=>new Date(t).toLocaleTimeString('bn-BD',{hour:'2-digit',minute:'2-digit'});
+const dl=t=>same(t,Date.now())?'আজ':same(t,Date.now()-864e5)?'গতকাল':new Date(t).toLocaleDateString('bn-BD',{day:'numeric',month:'long',year:'numeric'});
+const ago=t=>!t?'':same(t,Date.now())?hm(t):new Date(t).toLocaleDateString('bn-BD',{day:'numeric',month:'short'});
+const sz=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB';
+const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
+const isWeb=u=>String(u.id||u).startsWith('web-');
+const isWebChat=u=>!!(u&&typeof u==='object'&&u.webChat);
+const phoneOf=u=>isWeb(u)?String(u.id).slice(4):'';
+const nm=u=>u.name||('…'+String(u.id).slice(-6));
+const av=(u,c='')=>`<div class="av ${c}" style="--h:${hue(u.id)}">${esc(nm(u).replace('…','').slice(0,1).toUpperCase())}${u.online&&!c?'<i></i>':''}</div>`;
+const fu=f=>base+'/f/'+encodeURIComponent(f.id);
+function toast(s){const t=$('toast');t.textContent=s;t.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>t.classList.add('hide'),3200)}
+function setCs(on,txt){$('cs').classList.toggle('on',on);$('ct').textContent=txt}
+const send=o=>ws&&ws.readyState===1?(ws.send(JSON.stringify(o)),true):(toast('সার্ভারের সাথে সংযোগ নেই'),false);
+
+async function getBase(){
+  const r=await fetch(FS,{cache:'no-store'});if(!r.ok)throw Error('firestore '+r.status);
+  const j=await r.json(),u=j.fields&&j.fields.serverUrl&&j.fields.serverUrl.stringValue;
+  if(!u||!/^https:\/\//i.test(u))throw Error('serverUrl নেই');
+  return u.replace(/\/+$/,'');
+}
+async function api(path,o={},again=true){
+  try{
+    const r=await fetch(base+path,{...o,headers:{'X-Admin-Token':token,...(o.headers||{})}});
+    let d={};try{d=await r.json()}catch(_){}
+    if(!r.ok||d.ok===false)throw Error(d.error||'HTTP '+r.status);
+    return d;
+  }catch(e){
+    if(again&&e instanceof TypeError){base=await getBase();return api(path,o,false)}
+    throw e;
+  }
+}
+function later(msg){
+  if($('app').classList.contains('hide'))$('lerr').textContent=msg;
+  clearTimeout(timer);timer=setTimeout(connect,Math.min(15000,1000*2**retry++));
+}
+async function connect(){
+  if(connecting||manual)return;connecting=true;setCs(0,'সংযোগ হচ্ছে…');
+  try{base=await getBase()}catch(e){connecting=false;setCs(0,'সার্ভার লিংক পাওয়া যায়নি');return later('সার্ভারের লিংক আনা যায়নি — আবার চেষ্টা হচ্ছে…')}
+  connecting=false;
+  const s=new WebSocket(base.replace(/^http/i,'ws')+'/admin-ws?token='+encodeURIComponent(token));ws=s;let ok=false;
+  s.onopen=()=>{if(ws!==s)return;ok=true;retry=0;$('lerr').textContent='';setCs(1,'লাইভ');
+    $('login').classList.add('hide');$('app').classList.remove('hide');sessionStorage.setItem('tok',token);localStorage.setItem('tok',token);if(window.AndroidBridge&&window.AndroidBridge.setAdminToken)window.AndroidBridge.setAdminToken(token);loadFiles().catch(()=>{});loadVisitorStats().catch(()=>{})};
+  s.onmessage=e=>{if(ws!==s)return;let m;try{m=JSON.parse(e.data)}catch(_){return}
+    if(m.t==='denied'){logout('ভুল টোকেন');return}
+    if(m.t==='init'){users=new Map(m.users.map(u=>[u.id,u]));if(m.groupHistory)groupThread=m.groupHistory;if(sel&&users.has(sel))send({t:'open',uid:sel});else if(sel)closeChat();if(groupMode){thread=groupThread;renderMsgs()}renderList();renderInfo()}
+    else if(m.t==='user'){users.set(m.user.id,m.user);renderList();if(sel===m.user.id){renderHead();renderInfo()}}
+    else if(m.t==='thread'&&m.uid===sel&&!groupMode){thread=m.msgs||[];renderMsgs()}
+    else if(m.t==='group_history'){groupThread=m.messages||[];if(groupMode){thread=groupThread;renderMsgs()}}
+    else if(m.t==='group_msg'){if(m.message.gid&&m.message.gid!=='public')return;if(!groupThread.some(x=>x.mid===m.message.mid))groupThread.push(m.message);if(groupMode){thread=groupThread;renderMsgs()}}
+    else if(m.t==='group_deleted'){groupThread=groupThread.filter(x=>x.mid!==m.mid);if(groupMode){thread=groupThread;renderMsgs()}}
+    else if(m.t==='msg'){const u=users.get(m.uid);
+      if(u){u.last=m.msg;if(m.msg.from==='user')u.lastUserTs=m.msg.ts}
+      if(m.msg.file)loadFiles().catch(()=>{});
+      if(m.uid===sel){if(!thread.some(x=>x.mid&&x.mid===m.msg.mid))thread.push(m.msg);renderMsgs();mark(sel)}
+      renderList()}
+    else if(m.t==='deleted'){if(m.uid===sel&&!groupMode){thread=thread.filter(x=>x.mid!==m.mid);renderMsgs()}loadFiles().catch(()=>{})}
+    else if(m.t==='delete_ack'){if(m.ok){thread=thread.filter(x=>x.mid!==m.mid);renderMsgs()}else toast('মেসেজ মুছতে সমস্যা হয়েছে')}
+    else if(m.t==='presence'){/* admin panel-এ প্রযোজ্য নয় */}};
+  s.onclose=()=>{if(ws!==s)return;setCs(0,'সংযোগ বিচ্ছিন্ন');if(!manual&&token)later(ok?'':'সার্ভারে সংযোগ হয়নি — আবার চেষ্টা হচ্ছে…')};
+}
+function logout(msg){
+  manual=true;clearTimeout(timer);token='';sessionStorage.removeItem('tok');localStorage.removeItem('tok');if(window.AndroidBridge&&window.AndroidBridge.clearAdminToken)window.AndroidBridge.clearAdminToken();
+  const o=ws;ws=null;if(o){o.onclose=null;try{o.close()}catch(_){}}
+  users.clear();files=[];closeChat();$('app').classList.add('hide');$('login').classList.remove('hide');
+  $('tok').value='';$('lerr').textContent=msg||'';renderList();
+}
+
+const mark=id=>{const u=users.get(id);seen[id]=Math.max(Date.now(),u&&u.lastUserTs||0);localStorage.setItem('seen',JSON.stringify(seen));renderList()};
+const isNew=u=>u.lastUserTs>(seen[u.id]||0)&&u.id!==sel;
+function renderList(){
+  const q=$('q').value.trim().toLowerCase();
+  const a=[...users.values()].filter(u=>!q||(nm(u)+' '+u.id).toLowerCase().includes(q))
+    .sort((x,y)=>(y.last?y.last.ts:y.lastSeen||0)-(x.last?x.last.ts:x.lastSeen||0));
+  $('ul').innerHTML=a.length?a.map(u=>{const n=isNew(u),l=u.last;
+    return `<div class="u ${u.id===sel?'sel':''} ${n?'new':''}" data-uid="${esc(u.id)}">${av(u)}<div class="ui">
+      <div class="un"><span>${esc(nm(u))}</span>${isWeb(u)?'<em class="tag web">ওয়েব</em>':''}${u.banned?'<em class="tag">ব্লক</em>':''}</div>
+      <div class="pv"><span>${l?esc((l.from==='admin'?'আপনি: ':'')+(l.text||(l.file?'📎 '+(l.file.name||'ফাইল'):''))):'এখনো কোনো মেসেজ নেই'}</span><span style="flex:none">${l?ago(l.ts):''}</span></div></div>
+      ${n?'<div class="dotn"></div>':''}</div>`}).join(''):'<div class="none">কোনো ইউজার নেই</div>';
+  const c=[...users.values()].filter(isNew).length;document.title=(c?'('+c+') ':'')+'চ্যাট অ্যাডমিন';
+}
+$('ul').onclick=e=>{const el=e.target.closest('[data-uid]');if(el)pick(el.dataset.uid)};
+$('groupB').onclick=()=>{groupMode=true;sel='';thread=groupThread;document.body.classList.add('thread');$('ch').classList.remove('hide');$('rf').classList.remove('hide');$('cn').textContent='সবার গ্রুপ';$('cst').textContent='সব ইউজার এই গ্রুপের মেসেজ ও ফাইল দেখতে পারবে';$('banB').classList.add('hide');$('callB').classList.add('hide');$('cav').innerHTML='👥';$('tx').placeholder='গ্রুপে লিখুন…';send({t:'group_open'});renderMsgs();renderList();};
+$('q').oninput=renderList;
+function pick(id){groupMode=false;sel=id;thread=[];if(!matchMedia('(min-width:1181px)').matches)document.body.classList.remove('info');document.body.classList.add('thread');$('ch').classList.remove('hide');$('rf').classList.remove('hide');
+  renderHead();renderMsgs();renderInfo();mark(id);send({t:'open',uid:id});$('tx').focus()}
+function closeChat(){groupMode=false;sel='';thread=[];document.body.classList.remove('thread');$('ch').classList.add('hide');$('rf').classList.add('hide');renderMsgs();renderInfo()}
+function renderHead(){if(groupMode){$('cn').textContent='সবার গ্রুপ';$('cst').textContent='সবার জন্য উন্মুক্ত';$('cav').innerHTML='👥';$('banB').classList.add('hide');return}const u=users.get(sel);if(!u)return;$('banB').classList.remove('hide');
+  $('cav').innerHTML=av(u);$('cn').textContent=nm(u);
+  const w=isWeb(u),wc=isWebChat(u),c=$('callB');c.classList.toggle('hide',!w||wc);if(w&&!wc)c.href='tel:'+phoneOf(u);
+  $('tx').placeholder=(w&&!wc)?'নোট লিখুন (যোগাযোগ ফর্মের ভিজিটর উত্তর পাবেন না)…':'উত্তর লিখুন…';
+  $('cst').textContent=wc?'ওয়েবসাইট লাইভ চ্যাট · '+(u.online?'অনলাইন':'অফলাইন'):w?'ওয়েবসাইট যোগাযোগ ফর্ম · '+phoneOf(u):(u.online?'অনলাইন':'শেষ দেখা: '+(u.lastSeen?ago(u.lastSeen):'—'));
+  const b=$('banB');b.textContent=u.banned?'আনব্লক':'ব্লক';b.className='pill '+(u.banned?'sec':'bad')}
+
+function fileHtml(f){const u=fu(f);
+  return f.img?`<a href="${esc(u)}" data-img="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="${esc(f.name)}" loading="lazy"></a>`
+   :`<a href="${esc(u)}" target="_blank" rel="noopener">📎 ${esc(f.name||'ফাইল')} · ${sz(+f.size||0)}</a>`}
+function renderMsgs(){
+  const box=$('ms');
+  if(!sel&&!groupMode){box.innerHTML='<div class="empty"><div class="lg">💬</div><b>কথোপকথন বেছে নিন</b><div>বাম পাশ থেকে একজন ইউজার সিলেক্ট করুন</div></div>';return}
+  if(!thread.length){box.innerHTML='<div class="empty"><div class="lg">✉️</div>এখনো কোনো মেসেজ নেই। প্রথম উত্তরটি লিখুন।</div>';return}
+  const u=groupMode?{id:'group',name:'গ্রুপ'}:(users.get(sel)||{id:sel});let h='';
+  thread.forEach((m,i)=>{const p=thread[i-1],n=thread[i+1];
+    if(!p||!same(p.ts,m.ts))h+=`<div class="day">${dl(m.ts)}</div>`;
+    if(m.from==='announce'){h+=`<div class="an">📢 ${esc(m.text)}</div>`;return}
+    const g=(a,b)=>a&&b&&a.from===b.from&&same(a.ts,b.ts)&&b.ts-a.ts<3e5;
+    const first=!g(p,m),last=!g(m,n),who=m.from==='admin'?'admin':'user';
+    const media=m.file&&m.file.img&&!m.text;
+    const su=groupMode?{id:m.from||'x',name:m.name||m.from}:u;
+    if(groupMode&&who==='user'&&first)h+=`<div class="sn">${esc(nm(su))}</div>`;
+    h+=`<div class="r ${who} ${first?'f c':''} ${last?'l':''}">${who==='user'?(last?av(su,'sm'):'<div class="sp"></div>'):''}
+      <div class="b ${media?'m':''}" title="${esc(new Date(m.ts).toLocaleString('bn-BD'))}">${m.text?esc(m.text):''}${m.file?fileHtml(m.file):''}</div>
+      <button class="x" data-mid="${esc(m.mid)}" title="মেসেজ মুছুন">🗑</button></div>`;
+    if(last)h+=`<div class="tm ${who}">${hm(m.ts)}</div>`});
+  box.innerHTML=h;box.scrollTop=box.scrollHeight;
+}
+$('ms').onclick=e=>{const im=e.target.closest('[data-img]');
+  if(im){e.preventDefault();$('lb').innerHTML='<img src="'+esc(im.dataset.img)+'" alt="">';$('lb').classList.remove('hide');return}
+  const b=e.target.closest('[data-mid]');if(b&&confirm('এই মেসেজটি স্থায়ীভাবে মুছবেন?')){if(groupMode)send({t:'group_delete',mid:b.dataset.mid});else if(sel)send({t:'delete_msg',uid:sel,mid:b.dataset.mid})}};
+
+function renderInfo(){
+  const u=users.get(sel),b=$('ibody');if(!u){b.innerHTML='<div class="none">ইউজার সিলেক্ট করুন</div>';return}
+  const fl=files.filter(f=>f.uid===sel),D=t=>t?new Date(t).toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}):'—';
+  b.innerHTML=`<div class="ip">${av(u,'lg')}<b>${esc(nm(u))}</b><small style="color:var(--muted)">${u.online?'অনলাইন':'অফলাইন'}${u.banned?' · ব্লক করা':''}</small></div>
+    ${isWeb(u)?(isWebChat(u)?`<div class="note">💬 ওয়েবসাইটের লাইভ চ্যাট। এখানে আপনার পাঠানো উত্তর ভিজিটর সরাসরি ওয়েবসাইটেই দেখতে পাবেন।</div>`:`<div class="note">🌐 ওয়েবসাইটের যোগাযোগ ফর্মের ভিজিটর। এখানে লেখা উত্তর তিনি দেখতে পাবেন না — মোবাইলে যোগাযোগ করুন।<br><a href="tel:${esc(phoneOf(u))}">📞 কল</a> · <a href="sms:${esc(phoneOf(u))}">💬 এসএমএস</a> · <a href="https://wa.me/88${esc(phoneOf(u).replace(/^\+?88/,''))}" target="_blank" rel="noopener">WhatsApp</a></div>`):''}
+    <dl class="kv">${isWebChat(u)?`<dt>মোবাইল নম্বর</dt><dd><a href="tel:${esc(u.phone||'')}" style="color:var(--accent)">${esc(u.phone||'—')}</a></dd><dt>আইপি অ্যাড্রেস</dt><dd style="overflow-wrap:anywhere">${esc(u.ip||'অজানা')}</dd><dt>আনুমানিক লোকেশন</dt><dd>${esc([u.geo&&u.geo.city,u.geo&&u.geo.region,u.geo&&u.geo.country].filter(Boolean).join(', ')||'অজানা')}</dd><dt>ইন্টারনেট সেবা</dt><dd>${esc(u.geo&&u.geo.isp||'—')}</dd><dt>ভিজিটর আইডি</dt><dd>${esc(u.id)}</dd>`:isWeb(u)?`<dt>মোবাইল</dt><dd>${esc(phoneOf(u))}</dd>`:`<dt>আইডি</dt><dd>${esc(u.id)}</dd>`}${isWeb(u)?'':`<dt>ভার্সন</dt><dd>${esc(u.ver||'—')}</dd><dt>লাইসেন্স</dt><dd>${esc(u.lic||'—')}</dd>`}
+    <dt>প্রথম দেখা</dt><dd>${esc(D(u.firstSeen))}</dd><dt>শেষ দেখা</dt><dd>${esc(D(u.lastSeen))}</dd></dl>
+    <h3>শেয়ার করা ফাইল (${fl.length})</h3>`+(fl.length?fl.map(f=>`<div class="fi"><div class="ib">${f.img?'🖼️':'📄'}</div><div><b title="${esc(f.name)}">${esc(f.name)}</b>
+      <small>${sz(+f.size||0)} · ${ago(f.ts)}</small> <a href="${esc(f.url||fu(f))}" target="_blank" rel="noopener">দেখুন</a> <a href="${esc((f.url||fu(f))+'?dl=1')}" target="_blank" rel="noopener">ডাউনলোড</a></div>
+      <button class="x" style="opacity:.7" data-file="${esc(f.id)}" title="ফাইল মুছুন">🗑</button></div>`).join(''):'<div class="none" style="padding:10px">কোনো ফাইল নেই</div>');
+}
+$('info').onclick=async e=>{const b=e.target.closest('[data-file]');if(!b||!confirm('ফাইল ও সংশ্লিষ্ট মেসেজ মুছবেন?'))return;
+  try{await api('/admin-file',{method:'DELETE',headers:{'X-File-Id':b.dataset.file}});toast('ফাইল মুছে গেছে');await loadFiles();send({t:'open',uid:sel})}catch(er){toast('মুছতে সমস্যা: '+er.message)}};
+async function loadFiles(){files=(await api('/admin-files')).files||[];renderInfo()}
+async function loadVisitorStats(){
+  try{
+    const d=await api('/admin-visitor-stats');
+    $('vstat-today').textContent=String(d.today ?? 0);
+    $('vstat-status').textContent='আপডেট হয়েছে';
+    const days=Array.isArray(d.days)?d.days:[];
+    $('vstat-days').innerHTML=days.map(x=>{
+      const dt=new Date(x.date+'T00:00:00+06:00');
+      const label=dt.toLocaleDateString('bn-BD',{day:'numeric',month:'short'});
+      return `<div class="vday" title="${esc(x.date)}"><span>${label}</span><b>${Number(x.count)||0}</b></div>`;
+    }).join('');
+  }catch(e){$('vstat-status').textContent='লোড হয়নি';$('vstat-today').textContent='—'}
+}
+
+function reply(){const t=$('tx').value.trim();if(!t||(!sel&&!groupMode))return;const ok=groupMode?send({t:'group_msg',text:t}):send({t:'reply',uid:sel,text:t});if(ok){$('tx').value='';grow()}}
+const grow=()=>{const t=$('tx');t.style.height='38px';t.style.height=Math.min(120,t.scrollHeight)+'px'};
+$('rf').onsubmit=e=>{e.preventDefault();reply()};
+$('tx').oninput=grow;
+$('tx').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();reply()}};
+$('banB').onclick=()=>{if(groupMode)return;const u=users.get(sel);if(u&&confirm(u.banned?'আনব্লক করবেন?':'এই ইউজারের চ্যাট বন্ধ করবেন?'))send({t:'ban',uid:sel,on:!u.banned})};
+$('lb').onclick=()=>$('lb').classList.add('hide');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lb').classList.add('hide')});
+$('infB').onclick=()=>document.body.classList.toggle('info');
+$('back').onclick=()=>{document.body.classList.remove('thread');sel='';closeChat();renderList()};
+const mq=matchMedia('(min-width:1181px)');document.body.classList.toggle('info',mq.matches);
+mq.onchange=e=>document.body.classList.toggle('info',e.matches);
+$('infX').onclick=$('ibk').onclick=()=>document.body.classList.remove('info');
+
+$('annB').onclick=()=>{$('dlg').showModal();$('at').focus()};
+$('ac').onclick=()=>$('dlg').close();
+$('as').onclick=()=>{const t=$('at').value.trim();if(t&&send({t:'announce',text:t})){$('at').value='';$('dlg').close();toast('ঘোষণা পাঠানো হয়েছে')}};
+$('outB').onclick=()=>{if(confirm('লগ আউট করবেন?'))logout()};
+
+function up1(f,uid,cap,cb){return new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open('POST',base+'/upload');
+  x.setRequestHeader('X-Admin-Token',token);x.setRequestHeader('X-File-Name',encodeURIComponent(f.name));
+  if(groupMode){x.setRequestHeader('X-Scope','group');x.setRequestHeader('X-Peer','public');}
+  else{x.setRequestHeader('X-Target-Uid',uid);}
+  x.setRequestHeader('X-Caption',encodeURIComponent(cap));x.setRequestHeader('Content-Type','application/octet-stream');
+  x.upload.onprogress=e=>e.lengthComputable&&cb(e.loaded/e.total);
+  x.onload=()=>{let r={};try{r=JSON.parse(x.responseText)}catch(_){}
+    if(x.status<300&&r.ok)ok(r);else no(Error({too_big:'ফাইল সার্ভারের সীমার চেয়ে বড়',storage_full:'সার্ভারের স্টোরেজ পূর্ণ',busy:'সার্ভার ব্যস্ত',denied:'অনুমতি নেই',no_user:'ইউজার পাওয়া যায়নি'}[r.error]||r.error||'HTTP '+x.status))};
+  x.onerror=()=>no(Error('নেটওয়ার্ক সমস্যা'));x.send(f)})}
+async function upload(list){
+  if(busy||(!sel&&!groupMode)||!list.length)return;
+  if(!groupMode&&users.get(sel)&&isWeb(users.get(sel))){toast('ওয়েব ভিজিটরকে ফাইল পাঠানো যায় না');return}busy=true;$('fl').classList.add('dis');
+  const uid=sel,cap=$('tx').value.trim();$('tx').value='';grow();$('up').classList.remove('hide');let n=0;
+  try{for(let i=0;i<list.length;i++){const f=list[i];
+    await up1(f,uid,i===0?cap:'',p=>{$('ut').textContent=`${f.name} — ${Math.round(p*100)}% (${i+1}/${list.length})`;$('ub').style.width=((i+p)/list.length*100)+'%'});n++}
+    toast(n+'টি ফাইল পাঠানো হয়েছে')}
+  catch(e){toast('আপলোড ব্যর্থ: '+e.message);if(cap&&!$('tx').value){$('tx').value=cap;grow()}}
+  finally{busy=false;$('fl').classList.remove('dis');$('up').classList.add('hide');$('ub').style.width='0';$('fi').value='';
+    loadFiles().catch(()=>{});if(!groupMode&&uid)send({t:'open',uid});else if(groupMode)send({t:'group_open'})}
+}
+$('fi').onchange=()=>upload([...$('fi').files]);
+const ms=$('ms');
+ms.ondragover=e=>{e.preventDefault();if(sel||groupMode)ms.classList.add('drag')};
+ms.ondragleave=()=>ms.classList.remove('drag');
+ms.ondrop=e=>{e.preventDefault();ms.classList.remove('drag');if(e.dataTransfer.files.length)upload([...e.dataTransfer.files])};
+$('tx').onpaste=e=>{const f=[...(e.clipboardData&&e.clipboardData.files||[])];if(f.length){e.preventDefault();upload(f)}};
+
+$('lf').onsubmit=e=>{e.preventDefault();token=$('tok').value.trim();if(!token)return;localStorage.setItem('tok',token);if(window.AndroidBridge&&window.AndroidBridge.setAdminToken)window.AndroidBridge.setAdminToken(token);manual=false;retry=0;$('lerr').textContent='সংযোগ হচ্ছে…';connect()};
+if(token){manual=false;connect()}
+setInterval(()=>{if(!$('app').classList.contains('hide')&&token)loadVisitorStats().catch(()=>{})},60000);
+})();
+</script></body></html>
